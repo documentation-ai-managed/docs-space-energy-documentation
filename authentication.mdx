@@ -1,0 +1,191 @@
+---
+title: Authentication
+description: Learn how to authenticate and secure access to your Space Energy documentation spaces
+---
+
+## Authentication Overview
+
+Authentication in Space Energy Documentation ensures that only authorized users can access and modify your documentation spaces. We support multiple authentication methods to accommodate different organizational needs and security requirements.
+
+<Tabs>
+  <Tab title="API Key" icon="key">
+    <Steps>
+      <Step title="Generate API Key" icon="plus">
+        Navigate to your account settings and generate a new API key for programmatic access.
+      </Step>
+      <Step title="Configure Headers" icon="settings">
+        Include the API key in the Authorization header for all API requests.
+      </Step>
+      <Step title="Test Connection" icon="check">
+        Verify your API key works by making a test request to the API.
+      </Step>
+    </Steps>
+  </Tab>
+  <Tab title="OAuth" icon="shield">
+    <CodeGroup tabs="JavaScript,Python">
+      ```javascript
+const oauthUrl = 'https://space-energy.com/oauth/authorize';
+const response = await fetch(oauthUrl, {
+  method: 'POST',
+  body: JSON.stringify({
+    client_id: 'your-client-id',
+    redirect_uri: 'https://your-app.com/callback'
+  })
+});
+const authData = await response.json();
+```
+      ```python
+import requests
+
+oauth_url = 'https://space-energy.com/oauth/authorize'
+data = {
+  'client_id': 'your-client-id',
+  'redirect_uri': 'https://your-app.com/callback'
+}
+response = requests.post(oauth_url, json=data)
+auth_data = response.json()
+```
+    </CodeGroup>
+  </Tab>
+  <Tab title="SSO" icon="users">
+    Configure Single Sign-On with your identity provider for seamless authentication across your organization.
+  </Tab>
+</Tabs>
+
+## Setting Up Authentication
+
+The authentication setup process varies depending on your chosen method. For most users, API key authentication provides a simple and secure way to access the Space Energy API.
+
+<Callout kind="info">API keys should be stored securely and never committed to version control.</Callout>
+
+<Expandable title="Security Best Practices" default-open="false">
+  <Expandable title="Key Rotation" default-open="false">
+    Regularly rotate your API keys to minimize the impact of potential compromises.
+  </Expandable>
+  <Expandable title="Access Scoping" default-open="false">
+    Limit API key permissions to only the resources they need to access.
+  </Expandable>
+  <Expandable title="Monitoring" default-open="false">
+    Monitor API usage patterns to detect unusual activity that may indicate security issues.
+  </Expandable>
+</ExpandableGroup>
+
+## User Roles and Permissions
+
+Space Energy Documentation supports role-based access control with predefined roles for different levels of access.
+
+| Role | Permissions |
+|------|-------------|
+| Viewer | Read-only access to documentation spaces |
+| Editor | Can create and edit documentation |
+| Admin | Full control including user management and settings |
+
+## Multi-Factor Authentication
+
+Enhance security by enabling multi-factor authentication for your account. This adds an extra layer of protection beyond passwords or API keys.
+
+<Steps>
+  <Step title="Enable MFA" icon="lock">
+    Go to your account security settings and enable multi-factor authentication.
+  </Step>
+  <Step title="Choose Method" icon="settings">
+    Select your preferred method: authenticator app, SMS, or hardware key.
+  </Step>
+  <Step title="Verify Setup" icon="check">
+    Complete the setup process by verifying your chosen authentication method.
+  </Step>
+</Steps>
+
+## Troubleshooting Authentication Issues
+
+Common authentication problems and their solutions to help you get back up and running quickly.
+
+<Callout kind="alert">If you're experiencing persistent authentication issues, contact our support team for assistance.</Callout>
+
+<Expandable title="Common Issues" default-open="false">
+  <Expandable title="Invalid API Key" default-open="false">
+    Double-check that your API key is correct and hasn't expired. Regenerate if necessary.
+  </Expandable>
+  <Expandable title="OAuth Redirect Mismatch" default-open="false">
+    Ensure your redirect URI matches exactly what's configured in your OAuth application settings.
+  </Expandable>
+  <Expandable title="Permission Denied" default-open="false">
+    Verify that your user account or API key has the necessary permissions for the requested action.
+  </Expandable>
+</ExpandableGroup>
+
+## Integration with Identity Providers
+
+Space Energy supports integration with popular identity providers for streamlined authentication across your organization.
+
+<Tabs>
+  <Tab title="Google" icon="globe">
+    Configure Google OAuth for easy sign-in using Google accounts.
+  </Tab>
+  <Tab title="Microsoft" icon="globe">
+    Integrate with Azure Active Directory for enterprise authentication.
+  </Tab>
+  <Tab title="Okta" icon="globe">
+    Set up SAML-based authentication with Okta for secure access.
+  </Tab>
+</Tabs>
+
+## Session Management
+
+Understanding how sessions work in Space Energy Documentation helps you manage user access effectively.
+
+Sessions automatically expire after a period of inactivity, requiring users to re-authenticate. This helps maintain security while providing a good user experience.
+
+## API Authentication Examples
+
+Practical examples showing how to authenticate API requests in different programming languages.
+
+<CodeGroup tabs="JavaScript,Python,Go">
+  ```javascript
+const authenticate = async (apiKey) => {
+  const response = await fetch('/api/spaces', {
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json'
+    }
+  });
+  return response.json();
+};
+```
+  ```python
+def authenticate(api_key):
+    headers = {
+        'Authorization': f'Bearer {api_key}',
+        'Content-Type': 'application/json'
+    }
+    response = requests.get('/api/spaces', headers=headers)
+    return response.json()
+```
+  ```go
+func authenticate(apiKey string) (map[string]interface{}, error) {
+    client := &http.Client{}
+    req, err := http.NewRequest("GET", "/api/spaces", nil)
+    if err != nil {
+        return nil, err
+    }
+    req.Header.Set("Authorization", "Bearer "+apiKey)
+    req.Header.Set("Content-Type", "application/json")
+    resp, err := client.Do(req)
+    if err != nil {
+        return nil, err
+    }
+    defer resp.Body.Close()
+    var result map[string]interface{}
+    json.NewDecoder(resp.Body).Decode(&result)
+    return result, nil
+}
+```
+</CodeGroup>
+
+## Security Considerations
+
+Best practices for maintaining secure authentication in your Space Energy documentation environment.
+
+Regular security audits and staying informed about authentication best practices are crucial for protecting your documentation spaces.
+
+<Callout kind="tip">Enable audit logging to track authentication events and monitor for suspicious activity.</Callout>

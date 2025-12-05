@@ -1,0 +1,297 @@
+---
+title: Webhooks
+description: Set up and manage webhooks for automated notifications and integrations with Space Energy
+---
+
+## Webhooks Overview
+
+Webhooks in Space Energy Documentation enable real-time notifications and automated workflows by sending HTTP requests to specified URLs when certain events occur in your documentation spaces. This powerful feature allows you to integrate documentation updates with other tools and services.
+
+<Columns cols={3}>
+  <Card title="Event Triggers" icon="bell" href="#event-triggers">
+    Learn about different events that can trigger webhooks.
+  </Card>
+  <Card title="Security" icon="shield" href="#security">
+    Secure your webhooks with proper authentication and validation.
+  </Card>
+  <Card title="Testing" icon="check" href="#testing">
+    Test and debug webhook configurations effectively.
+  </Card>
+</Columns>
+
+## Setting Up Webhooks
+
+Creating webhooks in Space Energy is straightforward and requires just a few configuration steps.
+
+<Steps>
+  <Step title="Access Settings" icon="settings">
+    Navigate to your space settings and locate the webhooks section.
+  </Step>
+  <Step title="Add Endpoint" icon="plus">
+    Provide the URL where webhook notifications should be sent.
+  </Step>
+  <Step title="Select Events" icon="filter">
+    Choose which events should trigger notifications to this endpoint.
+  </Step>
+  <Step title="Configure Security" icon="lock">
+    Set up authentication and validation for secure webhook delivery.
+  </Step>
+  <Step title="Test Connection" icon="send">
+    Send a test webhook to verify your endpoint is working correctly.
+  </Step>
+</Steps>
+
+## Event Triggers
+
+Space Energy supports a variety of events that can trigger webhook notifications, allowing you to automate different aspects of your workflow.
+
+<Tabs>
+  <Tab title="Content Events" icon="file-text">
+    Events related to documentation content changes and updates.
+  </Tab>
+  <Tab title="User Events" icon="users">
+    Notifications for user-related activities in your space.
+  </Tab>
+  <Tab title="System Events" icon="server">
+    System-level events and maintenance notifications.
+  </Tab>
+</Tabs>
+
+<Expandable title="Available Events" default-open="false">
+  <Expandable title="Document Created" default-open="false">
+    Triggered when a new documentation page is created in your space.
+  </Expandable>
+  <Expandable title="Document Updated" default-open="false">
+    Fired whenever existing documentation content is modified.
+  </Expandable>
+  <Expandable title="Document Deleted" default-open="false">
+    Notifies when documentation pages are removed from your space.
+  </Expandable>
+  <Expandable title="User Added" default-open="false">
+    Alerts when new users are invited to or join your documentation space.
+  </Expandable>
+  <Expandable title="Comment Added" default-open="false">
+    Triggered when comments are added to documentation pages.
+  </Expandable>
+</ExpandableGroup>
+
+## Webhook Payload
+
+Understanding the structure and content of webhook payloads helps you process notifications effectively.
+
+<CodeGroup tabs="JSON,Example">
+  ```json
+{
+  "event": "document.updated",
+  "timestamp": "2024-01-15T10:30:00Z",
+  "space": {
+    "id": "space-123",
+    "name": "API Documentation"
+  },
+  "document": {
+    "id": "doc-456",
+    "title": "Authentication Guide",
+    "path": "/guides/authentication"
+  },
+  "user": {
+    "id": "user-789",
+    "name": "John Doe",
+    "email": "john@example.com"
+  },
+  "changes": {
+    "summary": "Updated authentication examples",
+    "diff_url": "https://space-energy.com/diffs/doc-456"
+  }
+}
+```
+  ```json
+{
+  "event": "user.added",
+  "timestamp": "2024-01-15T11:00:00Z",
+  "space": {
+    "id": "space-123",
+    "name": "API Documentation"
+  },
+  "user": {
+    "id": "user-999",
+    "name": "Jane Smith",
+    "email": "jane@example.com",
+    "role": "editor"
+  },
+  "invited_by": {
+    "id": "user-789",
+    "name": "John Doe"
+  }
+}
+```
+</CodeGroup>
+
+<Callout kind="info">All webhook payloads include a timestamp and event type for easy processing.</Callout>
+
+## Security and Authentication
+
+Secure your webhooks to prevent unauthorized access and ensure data integrity.
+
+<Steps>
+  <Step title="Use HTTPS" icon="lock">
+    Always use HTTPS URLs for webhook endpoints to encrypt data in transit.
+  </Step>
+  <Step title="Verify Signatures" icon="key">
+    Implement signature verification to confirm webhook authenticity.
+  </Step>
+  <Step title="Validate Payloads" icon="check">
+    Check that received payloads match expected structure and content.
+  </Step>
+</Steps>
+
+<CodeGroup tabs="JavaScript,Python">
+  ```javascript
+const crypto = require('crypto');
+
+function verifyWebhook(payload, signature, secret) {
+  const expectedSignature = crypto
+    .createHmac('sha256', secret)
+    .update(JSON.stringify(payload))
+    .digest('hex');
+  return signature === `sha256=${expectedSignature}`;
+}
+```
+  ```python
+import hmac
+import hashlib
+import json
+
+def verify_webhook(payload, signature, secret):
+    expected = hmac.new(
+        secret.encode(),
+        json.dumps(payload, sort_keys=True).encode(),
+        hashlib.sha256
+    ).hexdigest()
+    return hmac.compare_digest(signature, f'sha256={expected}')
+```
+</CodeGroup>
+
+## Handling Webhooks
+
+Best practices for processing and responding to webhook notifications.
+
+<Expandable title="Processing Tips" default-open="false">
+  <Expandable title="Asynchronous Processing" default-open="false">
+    Process webhooks asynchronously to avoid timeouts and improve reliability.
+  </Expandable>
+  <Expandable title="Idempotency" default-open="false">
+    Implement idempotent handling to safely process duplicate webhook deliveries.
+  </Expandable>
+  <Expandable title="Error Handling" default-open="false">
+    Handle webhook processing errors gracefully and implement retry mechanisms.
+  </Expandable>
+</ExpandableGroup>
+
+## Testing Webhooks
+
+Thoroughly test your webhook implementations to ensure they work correctly in production.
+
+<Tabs>
+  <Tab title="Manual Testing" icon="play">
+    Use Space Energy's built-in testing tools to send sample webhook payloads.
+  </Tab>
+  <Tab title="Automated Testing" icon="cpu">
+    Set up automated tests to verify webhook processing under various conditions.
+  </Tab>
+  <Tab title="Load Testing" icon="trending-up">
+    Test webhook performance under high load to ensure reliability.
+  </Tab>
+</Tabs>
+
+<CodeGroup tabs="JavaScript,Python">
+  ```javascript
+// Test webhook endpoint
+const testPayload = {
+  event: 'document.updated',
+  timestamp: new Date().toISOString(),
+  space: { id: 'test-space', name: 'Test Space' },
+  document: { id: 'test-doc', title: 'Test Document' }
+};
+
+fetch('https://your-webhook-endpoint.com/webhook', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(testPayload)
+});
+```
+  ```python
+import requests
+import json
+from datetime import datetime
+
+# Test webhook endpoint
+test_payload = {
+    'event': 'document.updated',
+    'timestamp': datetime.now().isoformat(),
+    'space': {'id': 'test-space', 'name': 'Test Space'},
+    'document': {'id': 'test-doc', 'title': 'Test Document'}
+}
+
+response = requests.post(
+    'https://your-webhook-endpoint.com/webhook',
+    json=test_payload
+)
+print(f'Test response: {response.status_code}')
+```
+</CodeGroup>
+
+## Common Use Cases
+
+Practical applications of webhooks in documentation workflows.
+
+<Expandable title="Integration Examples" default-open="false">
+  <Expandable title="Slack Notifications" default-open="false">
+    Send notifications to Slack channels when documentation is updated.
+  </Expandable>
+  <Expandable title="GitHub Sync" default-open="false">
+    Automatically sync documentation changes with connected GitHub repositories.
+  </Expandable>
+  <Expandable title="Email Alerts" default-open="false">
+    Send email notifications for important documentation events.
+  </Expandable>
+  <Expandable title="CI/CD Triggers" default-open="false">
+    Trigger automated testing or deployment when API documentation changes.
+  </Expandable>
+</ExpandableGroup>
+
+<Callout kind="tip">Combine webhooks with other Space Energy features for powerful automation workflows.</Callout>
+
+## Troubleshooting
+
+Resolve common webhook issues and improve reliability.
+
+<Expandable title="Common Issues" default-open="false">
+  <Expandable title="Failed Deliveries" default-open="false">
+    Check endpoint availability and review error logs for delivery failures.
+  </Expandable>
+  <Expandable title="Invalid Signatures" default-open="false">
+    Verify your signature verification implementation and secret keys.
+  </Expandable>
+  <Expandable title="Timeout Errors" default-open="false">
+    Optimize your webhook processing to complete within timeout limits.
+  </Expandable>
+  <Expandable title="Duplicate Events" default-open="false">
+    Implement deduplication logic to handle potential duplicate webhook deliveries.
+  </Expandable>
+</ExpandableGroup>
+
+## Webhook Logs and Monitoring
+
+Track webhook activity and performance to maintain reliable integrations.
+
+<Tabs>
+  <Tab title="Delivery Logs" icon="list">
+    View detailed logs of webhook deliveries and their status.
+  </Tab>
+  <Tab title="Performance Metrics" icon="bar-chart">
+    Monitor delivery times, success rates, and error patterns.
+  </Tab>
+  <Tab title="Retry Logic" icon="refresh-cw">
+    Configure automatic retries for failed webhook deliveries.
+  </Tab>
+</Tabs>

@@ -1,0 +1,166 @@
+openapi: '3.0.0'
+info:
+  version: 1.0.0
+  title: Space Energy API
+  license:
+    name: MIT
+servers:
+  - url: https://api.space-energy.com/v1
+paths:
+  /spaces:
+    get:
+      summary: List all documentation spaces
+      operationId: listSpaces
+      parameters:
+        - name: limit
+          in: query
+          description: How many items to return at one time (max 100)
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        200:
+          description: An paged array of documentation spaces
+          headers:
+            x-next:
+              description: A link to the next page of responses
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Spaces'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Create a new documentation space
+      operationId: createSpaces
+      responses:
+        201:
+          description: Space creation successful
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /spaces/{spaceId}:
+    get:
+      summary: Retrieve details for a specific documentation space
+      operationId: showSpaceById
+      parameters:
+        - name: spaceId
+          in: path
+          required: true
+          description: The unique identifier of the documentation space to retrieve
+          schema:
+            type: string
+      responses:
+        200:
+          description: Detailed information about the requested documentation space
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Spaces'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Update an existing documentation space
+      operationId: updateSpace
+      responses:
+        200:
+          description: Space update completed successfully
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /documents:
+    get:
+      summary: List all documents across documentation spaces
+      operationId: listDocuments
+      parameters:
+        - name: spaceId
+          in: query
+          description: Filter documents by specific space identifier
+          required: false
+          schema:
+            type: string
+      responses:
+        200:
+          description: A paginated collection of documents with metadata
+          headers:
+            x-next:
+              description: A link to the next page of responses
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Documents'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Space:
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+    Spaces:
+      type: array
+      items:
+        $ref: '#/components/schemas/Space'
+    Document:
+      required:
+        - id
+        - title
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        content:
+          type: string
+        space_id:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+    Documents:
+      type: array
+      items:
+        $ref: '#/components/schemas/Document'
+    Error:
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
